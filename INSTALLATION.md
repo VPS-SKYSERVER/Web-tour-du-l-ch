@@ -21,18 +21,22 @@
 
 ### 3.1. Cài đặt Menu
 
-1. Vào **Giao diện > Menu**
-2. Tạo menu mới hoặc chỉnh sửa menu hiện có
-3. Thêm các mục menu:
-   - Trang chủ
-   - Tour trong nước
-   - Tour quốc tế
-   - Vé máy bay
-   - Khách sạn
-   - Blog
-   - Liên hệ
-4. Chọn vị trí hiển thị: **Main Menu**
-5. Nhấn **Lưu menu**
+1. Vào **Giao diện > Menu**, nhấn **Tạo trình đơn** nếu chưa có menu nào.
+2. Đặt tên menu (ví dụ: *Header*) và tick **Main Menu** trong phần **Vị trí hiển thị**, sau đó nhấn **Lưu trình đơn**.
+3. Thêm từng mục với văn bản và URL gợi ý:
+   - **Trang chủ**: mở **Liên kết tự tạo**, nhập URL trang chủ (ví dụ `https://tenmiencuaban/`) và nhãn “Trang chủ”.
+   - **Tour trong nước** (mục cha, không liên kết): mở **Liên kết tự tạo**, nhập URL tạm là `#` hoặc `javascript:void(0);` để khi bấm không dẫn tới trang nào, đặt nhãn “Tour trong nước”, rồi thêm vào menu.
+   - **Tour quốc tế**: URL gợi ý `/tour-quoc-te/`.
+   - **Vé máy bay**: URL gợi ý `/ve-may-bay/`.
+   - **Khách sạn**: URL gợi ý `/khach-san/`.
+   - **Blog**: nếu đã cấu hình trang blog, chọn từ danh sách; nếu chưa, nhập `/blog/`.
+   - **Liên hệ**: chọn trang “Liên hệ” hoặc nhập `/lien-he/`.
+4. Thêm các menu con cho “Tour trong nước”:
+   - Tạo các trang con như: “Tour Đà Lạt”, “Tour Phú Yên”, “Tour Sapa”, … (vào **Trang > Thêm mới**), hoặc dùng **Liên kết tự tạo** với URL tương ứng (`/tour-da-lat/`, `/tour-phu-yen/`…).
+   - Thêm các mục đó vào menu, rồi trong cột **Cấu trúc menu** kéo từng mục con đặt ngay bên dưới “Tour trong nước” và kéo lệch sang phải 1 nấc để nó trở thành menu con (WordPress sẽ hiển thị nhãn “Mục con của Tour trong nước”).
+   - Bạn có thể lồng nhiều cấp (con của con) theo cách kéo lệch phải thêm nấc.
+5. Sau khi các mục đã xuất hiện trong cột **Cấu trúc menu**, kéo thả để sắp xếp đúng thứ tự: Trang chủ → Tour trong nước (kèm các mục con) → Tour quốc tế → Vé máy bay → Khách sạn → Blog → Liên hệ.
+5. Nhấn **Lưu trình đơn**. Từ thời điểm này, menu trên site sẽ hiển thị theo danh sách bạn vừa tạo thay vì danh sách mặc định trong mã nguồn.
 
 ### 3.2. Tùy chỉnh Theme
 
