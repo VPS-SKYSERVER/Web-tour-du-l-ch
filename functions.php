@@ -349,3 +349,126 @@ remove_action('wp_head', 'wlwmanifest_link');
 remove_action('wp_head', 'rsd_link');
 remove_action('wp_head', 'wp_shortlink_wp_head');
 
+// Enqueue assets for the tour landing template
+function traveltour_tour_landing_assets() {
+    if (is_page_template('page-tour-landing.php')) {
+        wp_enqueue_style(
+            'traveltour-tour-landing',
+            get_template_directory_uri() . '/assets/css/page-tour.css',
+            array(),
+            '1.0.0'
+        );
+    }
+}
+add_action('wp_enqueue_scripts', 'traveltour_tour_landing_assets');
+
+// Tour landing page meta box
+function traveltour_add_tour_landing_metabox() {
+    add_meta_box(
+        'traveltour-tour-landing-settings',
+        __('Tour Landing Settings', 'traveltour'),
+        'traveltour_render_tour_landing_metabox',
+        'page',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'traveltour_add_tour_landing_metabox');
+
+function traveltour_render_tour_landing_metabox($post) {
+    wp_nonce_field('traveltour_tour_landing_meta', 'traveltour_tour_landing_meta_nonce');
+
+    $template = get_page_template_slug($post->ID);
+    if ('page-tour-landing.php' !== $template) {
+        echo '<p>' . esc_html__('Hãy gán template "Tour Landing Page" cho trang này để áp dụng các thiết lập bên dưới.', 'traveltour') . '</p>';
+    }
+
+    $parent_cat = get_post_meta($post->ID, 'tour_landing_parent_cat', true);
+    $icons = get_post_meta($post->ID, 'tour_landing_icons', true);
+    $weather_title = get_post_meta($post->ID, 'tour_landing_weather_title', true);
+    $weather_temp = get_post_meta($post->ID, 'tour_landing_weather_temp', true);
+    $weather_desc = get_post_meta($post->ID, 'tour_landing_weather_desc', true);
+    $post_category = get_post_meta($post->ID, 'tour_landing_post_category', true);
+
+    ?>
+    <p>
+        <label for="tour_landing_parent_cat"><strong><?php esc_html_e('Slug danh mục tour cha (product_cat):', 'traveltour'); ?></strong></label><br>
+        <input type="text" id="tour_landing_parent_cat" name="tour_landing_parent_cat" value="<?php echo esc_attr($parent_cat); ?>" class="widefat" placeholder="vi-du: tour-nha-trang">
+        <em><?php esc_html_e('Dùng để lấy các danh mục con và sản phẩm tour hiển thị ở trang này.', 'traveltour'); ?></em>
+    </p>
+    <p>
+        <label for="tour_landing_icons"><strong><?php esc_html_e('Danh sách điểm nổi bật (mỗi dòng: icon|Tiêu đề|Mô tả ngắn):', 'traveltour'); ?></strong></label>
+        <textarea id="tour_landing_icons" name="tour_landing_icons" rows="4" class="widefat" placeholder="dashicons-airplane|Tour du lịch mát mẻ|Khởi hành hàng tuần&#10;dashicons-location|Khám phá địa danh|Hướng dẫn viên nhiệt tình"><?php echo esc_textarea($icons); ?></textarea>
+        <em><?php esc_html_e('Icon có thể dùng class Dashicons hoặc Font Awesome (nếu đã cài).', 'traveltour'); ?></em>
+    </p>
+    <p>
+        <label for="tour_landing_weather_title"><strong><?php esc_html_e('Tiêu đề khối thông tin phụ (ví dụ: Thời tiết Nha Trang):', 'traveltour'); ?></strong></label><br>
+        <input type="text" id="tour_landing_weather_title" name="tour_landing_weather_title" value="<?php echo esc_attr($weather_title); ?>" class="widefat">
+    </p>
+    <p style="display:flex; gap:12px;">
+        <span style="flex:1;">
+            <label for="tour_landing_weather_temp"><strong><?php esc_html_e('Thông tin chính (ví dụ: 30°C):', 'traveltour'); ?></strong></label>
+            <input type="text" id="tour_landing_weather_temp" name="tour_landing_weather_temp" value="<?php echo esc_attr($weather_temp); ?>" class="widefat">
+        </span>
+        <span style="flex:1;">
+            <label for="tour_landing_weather_desc"><strong><?php esc_html_e('Mô tả bổ sung:', 'traveltour'); ?></strong></label>
+            <input type="text" id="tour_landing_weather_desc" name="tour_landing_weather_desc" value="<?php echo esc_attr($weather_desc); ?>" class="widefat">
+        </span>
+    </p>
+    <p>
+        <label for="tour_landing_post_category"><strong><?php esc_html_e('Slug chuyên mục bài viết liên quan:', 'traveltour'); ?></strong></label><br>
+        <input type="text" id="tour_landing_post_category" name="tour_landing_post_category" value="<?php echo esc_attr($post_category); ?>" class="widefat" placeholder="vi-du: kinh-nghiem-du-lich">
+        <em><?php esc_html_e('Dùng để lấy bài viết kinh nghiệm, bí kíp du lịch.', 'traveltour'); ?></em>
+    </p>
+    <?php
+}
+
+function traveltour_save_tour_landing_meta($post_id) {
+    if (!isset($_POST['traveltour_tour_landing_meta_nonce'])) {
+        return;
+    }
+
+    if (!wp_verify_nonce($_POST['traveltour_tour_landing_meta_nonce'], 'traveltour_tour_landing_meta')) {
+        return;
+    }
+
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    if (isset($_POST['post_type']) && 'page' === $_POST['post_type']) {
+        if (!current_user_can('edit_page', $post_id)) {
+            return;
+        }
+    } else {
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+    }
+
+    $fields = array(
+        'tour_landing_parent_cat' => 'sanitize_title',
+        'tour_landing_weather_title' => 'sanitize_text_field',
+        'tour_landing_weather_temp' => 'sanitize_text_field',
+        'tour_landing_weather_desc' => 'sanitize_text_field',
+        'tour_landing_post_category' => 'sanitize_title',
+    );
+
+    foreach ($fields as $field => $sanitize_callback) {
+        if (isset($_POST[$field])) {
+            $value = call_user_func($sanitize_callback, wp_unslash($_POST[$field]));
+            update_post_meta($post_id, $field, $value);
+        } else {
+            delete_post_meta($post_id, $field);
+        }
+    }
+
+    if (isset($_POST['tour_landing_icons'])) {
+        $icons = implode("\n", array_filter(array_map('trim', explode("\n", wp_unslash($_POST['tour_landing_icons'])))));
+        update_post_meta($post_id, 'tour_landing_icons', sanitize_textarea_field($icons));
+    } else {
+        delete_post_meta($post_id, 'tour_landing_icons');
+    }
+}
+add_action('save_post', 'traveltour_save_tour_landing_meta');
+

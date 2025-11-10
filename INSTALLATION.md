@@ -97,6 +97,19 @@ Tương tự như trên
 1. Tạo trang "Liên hệ"
 2. Có thể sử dụng plugin Contact Form 7 để tạo form liên hệ
 
+### 5.4. Trang "Tour Landing" (ví dụ: Tour Nha Trang)
+
+1. Tạo trang mới (ví dụ: "Tour du lịch Nha Trang").
+2. Trong phần **Thuộc tính trang > Mẫu**, chọn template **Tour Landing Page**.
+3. Điền nội dung giới thiệu chính trong trình soạn thảo (sẽ hiển thị ở phần mô tả).
+4. Ở meta box **Tour Landing Settings** (bên dưới trình soạn thảo):
+   - **Slug danh mục tour cha**: nhập slug `product_cat` mà bạn muốn hiển thị (ví dụ `tour-nha-trang`). Hệ thống sẽ tự lấy danh mục con và sản phẩm thuộc danh mục này.
+   - **Danh sách điểm nổi bật**: mỗi dòng `icon|Tiêu đề|Mô tả ngắn`. Ví dụ `dashicons-airplane|Tour du lịch linh hoạt|Khởi hành hằng ngày`.
+   - **Thời tiết / thông tin phụ**: nhập tiêu đề, giá trị chính (ví dụ `30°C`) và mô tả ngắn.
+   - **Slug chuyên mục bài viết**: nhập slug của category bài viết chứa kinh nghiệm (ví dụ `kinh-nghiem-du-lich-nha-trang`).
+5. Đặt ảnh nổi bật cho trang để dùng làm nền hero.
+6. Xuất bản trang và gán vào menu (ví dụ làm menu con của "Tour trong nước").
+
 ## Bước 6: Cấu hình Trang chủ
 
 1. Vào **Cài đặt > Đọc**
