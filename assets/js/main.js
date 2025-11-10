@@ -54,6 +54,16 @@
                     $button.html('Gửi yêu cầu đặt tour');
                 }
             });
+
+        // Tour tabs switch
+        $('.tour-tab-button').on('click', function() {
+            var tab = $(this).data('tab');
+            $('.tour-tab-button').removeClass('is-active').attr('aria-selected', 'false');
+            $(this).addClass('is-active').attr('aria-selected', 'true');
+
+            $('.tour-tab-panel').removeClass('is-active');
+            $('#tour-tab-' + tab).addClass('is-active');
+        });
         });
         
         // Product Gallery Thumbnail Click
@@ -87,6 +97,42 @@
                 alert('Cảm ơn bạn đã đăng ký nhận tin!');
                 $(this)[0].reset();
             }
+        });
+
+        // Callback request form
+        $('#traveltour-callback-form').on('submit', function(e) {
+            e.preventDefault();
+            var $form = $(this);
+            var $btn = $form.find('button[type="submit"]');
+            var $msg = $('#callback-message');
+
+            $btn.prop('disabled', true).text('Đang gửi...');
+            $msg.hide().removeClass('success error');
+
+            $.ajax({
+                url: traveltourAjax.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'traveltour_callback_request',
+                    nonce: $form.find('input[name="nonce"]').val() || traveltourAjax.nonce,
+                    product_id: $form.find('input[name="product_id"]').val(),
+                    phone: $form.find('input[name="phone"]').val()
+                },
+                success: function(res) {
+                    if (res.success) {
+                        $msg.addClass('success').text(res.data.message).show();
+                        $form[0].reset();
+                    } else {
+                        $msg.addClass('error').text(res.data.message || 'Có lỗi xảy ra').show();
+                    }
+                },
+                error: function() {
+                    $msg.addClass('error').text('Có lỗi xảy ra. Vui lòng thử lại.').show();
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).text('Gửi');
+                }
+            });
         });
         
         // Lazy Load Images

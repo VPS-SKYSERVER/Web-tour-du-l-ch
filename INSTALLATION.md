@@ -110,6 +110,24 @@ Tương tự như trên
 5. Đặt ảnh nổi bật cho trang để dùng làm nền hero.
 6. Xuất bản trang và gán vào menu (ví dụ làm menu con của "Tour trong nước").
 
+### 5.5. Tạo Sản phẩm Tour Mẫu (để hiển thị đúng layout chi tiết)
+
+1. Vào **Sản phẩm > Thêm mới** và đặt tên theo tour (ví dụ: `[LIMOUSINE] Nha Trang - BBQ Tôm Hùm - 3N3Đ`).
+2. Ở khung soạn thảo chính, viết toàn bộ **Chương trình/Lịch trình tour** (ngày 1, ngày 2, …). Nội dung này sẽ hiển thị trong tab **“Lịch trình tour”** của trang chi tiết.
+3. Thiết lập phần **Dữ liệu sản phẩm** như thường lệ (giá, khuyến mãi...).
+4. Điền các trường tuỳ chỉnh của theme trong phần “Tùy chỉnh Tour” (bên phải/ dưới cùng trang):
+   - **Thời gian tour**: ví dụ `3 ngày 3 đêm`
+   - **Điểm khởi hành**: ví dụ `Hồ Chí Minh` hoặc `Hà Nội`
+   - **Điểm đến**: ví dụ `Nha Trang`
+   - (Tuỳ chọn) **Phương tiện** và **Tiêu chuẩn** nếu bạn có sử dụng 2 trường này
+5. Thêm **Ảnh đại diện sản phẩm** (ảnh lớn) và **Thư viện ảnh** (gallery) trong khung “Thư viện sản phẩm”. Các ảnh này sẽ hiển thị ở phần album và trong tab **“Hình ảnh”**.
+6. Gán sản phẩm vào **Danh mục sản phẩm (product_cat)** phù hợp (ví dụ: `tour-trong-nuoc > tour-nha-trang`). Việc gán đúng danh mục giúp trang **Tour Landing Page** lấy đúng dữ liệu.
+7. Xuất bản sản phẩm. Mở trang chi tiết để kiểm tra:
+   - Cột trái: album ảnh + thumbnail
+   - Cột phải: khối giá, thông số (thời gian, phương tiện, tiêu chuẩn), nút đặt/mua
+   - Banner “Yêu cầu tư vấn” với form SĐT
+   - Tabs: **Lịch trình tour** (lấy từ mô tả bạn đã viết ở bước 2) và **Hình ảnh** (lấy từ gallery)
+
 ## Bước 6: Cấu hình Trang chủ
 
 1. Vào **Cài đặt > Đọc**

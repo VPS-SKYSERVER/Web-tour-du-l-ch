@@ -167,6 +167,20 @@ function traveltour_add_tour_fields() {
         'label' => __('Điểm đến', 'traveltour'),
         'placeholder' => 'Đà Lạt',
     ));
+
+    // Optional: Transport
+    woocommerce_wp_text_input(array(
+        'id' => '_tour_transport',
+        'label' => __('Phương tiện', 'traveltour'),
+        'placeholder' => __('Xe Limousine / Máy bay ...', 'traveltour'),
+    ));
+
+    // Optional: Standard/Rating text
+    woocommerce_wp_text_input(array(
+        'id' => '_tour_standard',
+        'label' => __('Tiêu chuẩn', 'traveltour'),
+        'placeholder' => __('3 sao / 4 sao ...', 'traveltour'),
+    ));
     
     echo '</div>';
 }
@@ -192,6 +206,22 @@ function traveltour_save_tour_fields($post_id) {
     $tour_destination = $_POST['_tour_destination'];
     if (!empty($tour_destination)) {
         update_post_meta($post_id, '_tour_destination', esc_attr($tour_destination));
+    }
+
+    // Transport
+    $tour_transport = isset($_POST['_tour_transport']) ? $_POST['_tour_transport'] : '';
+    if (!empty($tour_transport)) {
+        update_post_meta($post_id, '_tour_transport', esc_attr($tour_transport));
+    } else {
+        delete_post_meta($post_id, '_tour_transport');
+    }
+
+    // Standard
+    $tour_standard = isset($_POST['_tour_standard']) ? $_POST['_tour_standard'] : '';
+    if (!empty($tour_standard)) {
+        update_post_meta($post_id, '_tour_standard', esc_attr($tour_standard));
+    } else {
+        delete_post_meta($post_id, '_tour_standard');
     }
 }
 add_action('woocommerce_process_product_meta', 'traveltour_save_tour_fields');
@@ -231,6 +261,40 @@ function traveltour_booking_form_handler() {
 add_action('wp_ajax_traveltour_booking', 'traveltour_booking_form_handler');
 add_action('wp_ajax_nopriv_traveltour_booking', 'traveltour_booking_form_handler');
 
+// Callback request (phone) handler
+function traveltour_callback_request_handler() {
+    check_ajax_referer('traveltour_nonce', 'nonce');
+
+    $phone = isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '';
+    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+
+    if (empty($phone)) {
+        wp_send_json_error(array('message' => __('Vui lòng nhập số điện thoại.', 'traveltour')));
+    }
+
+    // Very basic phone validation (digits and +, spaces, - allowed)
+    if (!preg_match('/^[0-9+\-\s().]{8,20}$/', $phone)) {
+        wp_send_json_error(array('message' => __('Số điện thoại không hợp lệ.', 'traveltour')));
+    }
+
+    $product_title = $product_id ? get_the_title($product_id) : __('Không xác định', 'traveltour');
+    $admin_email = get_option('admin_email');
+    $subject = sprintf(__('Yêu cầu tư vấn tour: %s', 'traveltour'), $product_title);
+    $message = sprintf(
+        "Số điện thoại: %s\nSản phẩm/Tour: %s (ID %d)\nThời gian: %s",
+        $phone,
+        $product_title,
+        $product_id,
+        current_time('mysql')
+    );
+
+    // Send email (ignore failures quietly)
+    @wp_mail($admin_email, $subject, $message);
+
+    wp_send_json_success(array('message' => __('Đã nhận yêu cầu. Chúng tôi sẽ liên hệ trong ít phút!', 'traveltour')));
+}
+add_action('wp_ajax_traveltour_callback_request', 'traveltour_callback_request_handler');
+add_action('wp_ajax_nopriv_traveltour_callback_request', 'traveltour_callback_request_handler');
 // Custom excerpt length
 function traveltour_excerpt_length($length) {
     return 20;
