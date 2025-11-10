@@ -1,0 +1,257 @@
+/* Additional Styles for TravelTour Theme */
+
+/* Product Detail Page */
+.product-detail-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin: 40px 0;
+}
+
+.product-gallery img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.product-gallery-thumbs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.product-gallery-thumbs img {
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.product-gallery-thumbs img:hover {
+    opacity: 1;
+}
+
+.product-summary {
+    padding: 20px;
+}
+
+.product-summary .product-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+.product-summary .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.rating-stars {
+    font-size: 20px;
+    color: var(--warning-color);
+}
+
+.product-summary .product-price {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+}
+
+.tour-info {
+    background: var(--bg-light);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.tour-info .info-item {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.tour-info .info-item:last-child {
+    margin-bottom: 0;
+}
+
+.tour-itinerary {
+    margin: 50px 0;
+    padding: 30px;
+    background: var(--bg-light);
+    border-radius: 10px;
+}
+
+.tour-itinerary h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+.itinerary-content {
+    line-height: 1.8;
+}
+
+/* WooCommerce Overrides */
+.woocommerce-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.woocommerce .product {
+    margin-bottom: 0;
+}
+
+.woocommerce .quantity {
+    margin-bottom: 20px;
+}
+
+.woocommerce .quantity input {
+    width: 80px;
+    padding: 10px;
+    text-align: center;
+}
+
+.woocommerce button.button,
+.woocommerce a.button {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.woocommerce button.button:hover,
+.woocommerce a.button:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Reviews */
+.product-reviews {
+    margin-top: 50px;
+}
+
+.comment-list {
+    list-style: none;
+    padding: 0;
+}
+
+.comment {
+    background: var(--bg-light);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+
+.comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.comment-author {
+    font-weight: 600;
+}
+
+.comment-date {
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.star-rating {
+    color: var(--warning-color);
+    margin-bottom: 10px;
+}
+
+/* Archive Pages */
+.archive-header {
+    text-align: center;
+    padding: 40px 0;
+    background: var(--bg-light);
+    margin-bottom: 40px;
+}
+
+.archive-title {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 40px 0;
+}
+
+.pagination a,
+.pagination span {
+    padding: 10px 15px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    color: var(--text-dark);
+}
+
+.pagination .current {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .product-detail-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .product-summary .product-title {
+        font-size: 24px;
+    }
+    
+    .product-summary .product-price {
+        font-size: 28px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading Animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
