@@ -182,9 +182,296 @@ function traveltour_add_tour_fields() {
         'placeholder' => __('3 sao / 4 sao ...', 'traveltour'),
     ));
     
+    $accordion_fields = array(
+        '_tour_price_detail'   => __('Giá tour chi tiết', 'traveltour'),
+        '_tour_schedule'       => __('Lịch khởi hành', 'traveltour'),
+        '_tour_included'       => __('Giá tour bao gồm', 'traveltour'),
+        '_tour_excluded'       => __('Giá tour không bao gồm', 'traveltour'),
+        '_tour_child_policy'   => __('Quy định trẻ em', 'traveltour'),
+        '_tour_cancel_policy'  => __('Quy định hủy tour', 'traveltour'),
+        '_tour_note'           => __('Ghi chú', 'traveltour'),
+        '_tour_payment'        => __('Hình thức thanh toán', 'traveltour'),
+        '_tour_pickup'         => __('Điểm đón khách', 'traveltour'),
+    );
+
+    foreach ($accordion_fields as $field_id => $field_label) {
+        if ($field_id === '_tour_price_detail') {
+            // Skip - will use custom meta box instead
+            continue;
+        } elseif ($field_id === '_tour_schedule') {
+            // Skip - will use custom meta box instead
+            continue;
+        } else {
+            woocommerce_wp_textarea_input(array(
+                'id' => $field_id,
+                'label' => $field_label,
+                'placeholder' => __('Nhập nội dung...', 'traveltour'),
+            ));
+        }
+    }
+
+    // Optional: Callback banner video URL
+    woocommerce_wp_text_input(array(
+        'id' => '_callback_video_url',
+        'label' => __('Video banner (MP4) cho form tư vấn', 'traveltour'),
+        'placeholder' => __('https://example.com/video.mp4', 'traveltour'),
+        'desc_tip' => true,
+        'description' => __('Nếu nhập link video .mp4, banner tư vấn sẽ dùng video nền thay cho ảnh đại diện.', 'traveltour'),
+    ));
+    
+    // Tour Manager Information
+    woocommerce_wp_text_input(array(
+        'id' => '_tour_manager_name',
+        'label' => __('Tên người phụ trách tour', 'traveltour'),
+        'placeholder' => __('VÕ THỊ QUỲNH NHƯ', 'traveltour'),
+    ));
+    
+    woocommerce_wp_text_input(array(
+        'id' => '_tour_manager_phone',
+        'label' => __('Số điện thoại người phụ trách', 'traveltour'),
+        'placeholder' => __('0915289840', 'traveltour'),
+    ));
+    
     echo '</div>';
 }
 add_action('woocommerce_product_options_general_product_data', 'traveltour_add_tour_fields');
+
+// Add Schedule Meta Box
+function traveltour_add_schedule_metabox() {
+    add_meta_box(
+        'traveltour_schedule_metabox',
+        __('Lịch khởi hành', 'traveltour'),
+        'traveltour_schedule_metabox_callback',
+        'product',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'traveltour_add_schedule_metabox');
+
+// Schedule Meta Box Callback
+function traveltour_schedule_metabox_callback($post) {
+    wp_nonce_field('traveltour_schedule_metabox', 'traveltour_schedule_nonce');
+    
+    $schedules = get_post_meta($post->ID, '_tour_schedule_data', true);
+    if (empty($schedules) || !is_array($schedules)) {
+        $schedules = array();
+    }
+    
+    ?>
+    <div id="traveltour-schedule-repeater" style="margin: 15px 0;">
+        <div class="schedule-items">
+            <?php if (!empty($schedules)) : ?>
+                <?php foreach ($schedules as $index => $schedule) : ?>
+                    <div class="schedule-item" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center; padding: 12px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Ngày khởi hành</label>
+                            <input type="text" name="tour_schedule[<?php echo $index; ?>][date]" value="<?php echo esc_attr($schedule['date']); ?>" placeholder="13/11/2025" style="width: 100%; padding: 8px;" />
+                        </div>
+                        <div style="flex: 2;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Phương tiện</label>
+                            <input type="text" name="tour_schedule[<?php echo $index; ?>][vehicle]" value="<?php echo esc_attr($schedule['vehicle']); ?>" placeholder="Xe Limousine 28 chỗ" style="width: 100%; padding: 8px;" />
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600;">Giá (VND)</label>
+                            <input type="text" name="tour_schedule[<?php echo $index; ?>][price]" value="<?php echo esc_attr($schedule['price']); ?>" placeholder="3290000" style="width: 100%; padding: 8px;" />
+                        </div>
+                        <div style="margin-top: 24px;">
+                            <button type="button" class="button remove-schedule-item" style="background: #dc3232; color: #fff; border-color: #dc3232;">Xóa</button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+        <button type="button" id="add-schedule-item" class="button button-primary" style="margin-top: 10px;">+ Thêm lịch khởi hành</button>
+        <p class="description" style="margin-top: 10px; color: #666;">
+            Nhập từng lịch khởi hành với đầy đủ thông tin. Giá nhập số không dấu phẩy (ví dụ: 3290000), hệ thống sẽ tự format.
+        </p>
+    </div>
+    
+    <script type="text/javascript">
+    jQuery(document).ready(function($) {
+        var scheduleIndex = <?php echo count($schedules); ?>;
+        
+        $('#add-schedule-item').on('click', function() {
+            var html = '<div class="schedule-item" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center; padding: 12px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">' +
+                '<div style="flex: 1;">' +
+                '<label style="display: block; margin-bottom: 5px; font-weight: 600;">Ngày khởi hành</label>' +
+                '<input type="text" name="tour_schedule[' + scheduleIndex + '][date]" value="" placeholder="13/11/2025" style="width: 100%; padding: 8px;" />' +
+                '</div>' +
+                '<div style="flex: 2;">' +
+                '<label style="display: block; margin-bottom: 5px; font-weight: 600;">Phương tiện</label>' +
+                '<input type="text" name="tour_schedule[' + scheduleIndex + '][vehicle]" value="" placeholder="Xe Limousine 28 chỗ" style="width: 100%; padding: 8px;" />' +
+                '</div>' +
+                '<div style="flex: 1;">' +
+                '<label style="display: block; margin-bottom: 5px; font-weight: 600;">Giá (VND)</label>' +
+                '<input type="text" name="tour_schedule[' + scheduleIndex + '][price]" value="" placeholder="3290000" style="width: 100%; padding: 8px;" />' +
+                '</div>' +
+                '<div style="margin-top: 24px;">' +
+                '<button type="button" class="button remove-schedule-item" style="background: #dc3232; color: #fff; border-color: #dc3232;">Xóa</button>' +
+                '</div>' +
+                '</div>';
+            $('.schedule-items').append(html);
+            scheduleIndex++;
+        });
+        
+        $(document).on('click', '.remove-schedule-item', function() {
+            if (confirm('Bạn có chắc muốn xóa lịch khởi hành này?')) {
+                $(this).closest('.schedule-item').remove();
+            }
+        });
+    });
+    </script>
+    <?php
+}
+
+// Save Schedule Meta Box
+function traveltour_save_schedule_metabox($post_id) {
+    if (!isset($_POST['traveltour_schedule_nonce']) || !wp_verify_nonce($_POST['traveltour_schedule_nonce'], 'traveltour_schedule_metabox')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    if (isset($_POST['tour_schedule']) && is_array($_POST['tour_schedule'])) {
+        $schedules = array();
+        foreach ($_POST['tour_schedule'] as $schedule) {
+            if (!empty($schedule['date']) && !empty($schedule['vehicle']) && !empty($schedule['price'])) {
+                $schedules[] = array(
+                    'date' => sanitize_text_field($schedule['date']),
+                    'vehicle' => sanitize_text_field($schedule['vehicle']),
+                    'price' => sanitize_text_field($schedule['price'])
+                );
+            }
+        }
+        update_post_meta($post_id, '_tour_schedule_data', $schedules);
+    } else {
+        delete_post_meta($post_id, '_tour_schedule_data');
+    }
+}
+add_action('save_post', 'traveltour_save_schedule_metabox');
+
+// Add Price Detail Meta Box
+function traveltour_add_price_detail_metabox() {
+    add_meta_box(
+        'traveltour_price_detail_metabox',
+        __('Giá tour chi tiết', 'traveltour'),
+        'traveltour_price_detail_metabox_callback',
+        'product',
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'traveltour_add_price_detail_metabox');
+
+// Price Detail Meta Box Callback
+function traveltour_price_detail_metabox_callback($post) {
+    wp_nonce_field('traveltour_price_detail_metabox', 'traveltour_price_detail_nonce');
+    
+    // Try new format first
+    $price_data = get_post_meta($post->ID, '_tour_price_detail_data', true);
+    
+    // Fallback to old format
+    if (empty($price_data) || !is_array($price_data)) {
+        $price_data = array(
+            'adult' => get_post_meta($post->ID, '_tour_price_adult', true),
+            'child' => get_post_meta($post->ID, '_tour_price_child', true),
+            'infant' => get_post_meta($post->ID, '_tour_price_infant', true),
+            'single_surcharge' => get_post_meta($post->ID, '_tour_single_surcharge', true),
+        );
+    }
+    
+    $adult = isset($price_data['adult']) ? $price_data['adult'] : '';
+    $child = isset($price_data['child']) ? $price_data['child'] : '';
+    $infant = isset($price_data['infant']) ? $price_data['infant'] : '';
+    $single_surcharge = isset($price_data['single_surcharge']) ? $price_data['single_surcharge'] : '';
+    
+    ?>
+    <div id="traveltour-price-detail" style="margin: 15px 0;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="padding: 12px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Giá tour cơ bản (Người lớn)</label>
+                <input type="text" name="tour_price_detail[adult]" value="<?php echo esc_attr($adult); ?>" placeholder="3290000" style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 3px;" />
+                <p class="description" style="margin: 5px 0 0 0; color: #666; font-size: 12px;">Nhập số không dấu phẩy (ví dụ: 3290000)</p>
+            </div>
+            <div style="padding: 12px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Giá tour cơ bản (Trẻ em)</label>
+                <input type="text" name="tour_price_detail[child]" value="<?php echo esc_attr($child); ?>" placeholder="2632000" style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 3px;" />
+                <p class="description" style="margin: 5px 0 0 0; color: #666; font-size: 12px;">Nhập số không dấu phẩy (ví dụ: 2632000)</p>
+            </div>
+            <div style="padding: 12px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Giá tour cơ bản (Em bé)</label>
+                <input type="text" name="tour_price_detail[infant]" value="<?php echo esc_attr($infant); ?>" placeholder="0" style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 3px;" />
+                <p class="description" style="margin: 5px 0 0 0; color: #666; font-size: 12px;">Nhập số không dấu phẩy (ví dụ: 0)</p>
+            </div>
+            <div style="padding: 12px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Phụ thu phòng đơn</label>
+                <input type="text" name="tour_price_detail[single_surcharge]" value="<?php echo esc_attr($single_surcharge); ?>" placeholder="1000000" style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 3px;" />
+                <p class="description" style="margin: 5px 0 0 0; color: #666; font-size: 12px;">Nhập số không dấu phẩy (ví dụ: 1000000)</p>
+            </div>
+        </div>
+        <p class="description" style="margin-top: 15px; color: #666; font-size: 13px;">
+            <strong>Lưu ý:</strong> Tất cả giá nhập số không dấu phẩy, hệ thống sẽ tự động format thành định dạng VND (ví dụ: 3.290.000 đ) khi hiển thị.
+        </p>
+    </div>
+    <?php
+}
+
+// Save Price Detail Meta Box
+function traveltour_save_price_detail_metabox($post_id) {
+    if (!isset($_POST['traveltour_price_detail_nonce']) || !wp_verify_nonce($_POST['traveltour_price_detail_nonce'], 'traveltour_price_detail_metabox')) {
+        return;
+    }
+    
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    
+    if (isset($_POST['tour_price_detail']) && is_array($_POST['tour_price_detail'])) {
+        $price_data = array(
+            'adult' => sanitize_text_field($_POST['tour_price_detail']['adult']),
+            'child' => sanitize_text_field($_POST['tour_price_detail']['child']),
+            'infant' => sanitize_text_field($_POST['tour_price_detail']['infant']),
+            'single_surcharge' => sanitize_text_field($_POST['tour_price_detail']['single_surcharge']),
+        );
+        update_post_meta($post_id, '_tour_price_detail_data', $price_data);
+        
+        // Also save to old format for backward compatibility
+        if (!empty($price_data['adult'])) {
+            update_post_meta($post_id, '_tour_price_adult', $price_data['adult']);
+        } else {
+            delete_post_meta($post_id, '_tour_price_adult');
+        }
+        if (!empty($price_data['child'])) {
+            update_post_meta($post_id, '_tour_price_child', $price_data['child']);
+        } else {
+            delete_post_meta($post_id, '_tour_price_child');
+        }
+        if (!empty($price_data['infant'])) {
+            update_post_meta($post_id, '_tour_price_infant', $price_data['infant']);
+        } else {
+            delete_post_meta($post_id, '_tour_price_infant');
+        }
+        if (!empty($price_data['single_surcharge'])) {
+            update_post_meta($post_id, '_tour_single_surcharge', $price_data['single_surcharge']);
+        } else {
+            delete_post_meta($post_id, '_tour_single_surcharge');
+        }
+    } else {
+        delete_post_meta($post_id, '_tour_price_detail_data');
+    }
+}
+add_action('save_post', 'traveltour_save_price_detail_metabox');
 
 // Save custom fields
 function traveltour_save_tour_fields($post_id) {
@@ -223,8 +510,79 @@ function traveltour_save_tour_fields($post_id) {
     } else {
         delete_post_meta($post_id, '_tour_standard');
     }
+
+    $accordion_fields = array(
+        // '_tour_price_detail' - handled by separate meta box
+        // '_tour_schedule' - handled by separate meta box
+        '_tour_included',
+        '_tour_excluded',
+        '_tour_child_policy',
+        '_tour_cancel_policy',
+        '_tour_note',
+        '_tour_payment',
+        '_tour_pickup',
+    );
+
+    foreach ($accordion_fields as $field_id) {
+        $value = isset($_POST[$field_id]) ? wp_kses_post($_POST[$field_id]) : '';
+        if (!empty($value)) {
+            update_post_meta($post_id, $field_id, $value);
+        } else {
+            delete_post_meta($post_id, $field_id);
+        }
+    }
+
+    // Callback video URL
+    $callback_video_url = isset($_POST['_callback_video_url']) ? $_POST['_callback_video_url'] : '';
+    if (!empty($callback_video_url)) {
+        update_post_meta($post_id, '_callback_video_url', esc_url_raw($callback_video_url));
+    } else {
+        delete_post_meta($post_id, '_callback_video_url');
+    }
+    
+    // Tour Manager Information
+    $tour_manager_name = isset($_POST['_tour_manager_name']) ? sanitize_text_field($_POST['_tour_manager_name']) : '';
+    if (!empty($tour_manager_name)) {
+        update_post_meta($post_id, '_tour_manager_name', $tour_manager_name);
+    } else {
+        delete_post_meta($post_id, '_tour_manager_name');
+    }
+    
+    $tour_manager_phone = isset($_POST['_tour_manager_phone']) ? sanitize_text_field($_POST['_tour_manager_phone']) : '';
+    if (!empty($tour_manager_phone)) {
+        update_post_meta($post_id, '_tour_manager_phone', $tour_manager_phone);
+    } else {
+        delete_post_meta($post_id, '_tour_manager_phone');
+    }
 }
 add_action('woocommerce_process_product_meta', 'traveltour_save_tour_fields');
+
+// Format itinerary headings
+function traveltour_format_itinerary_headings($content) {
+    if (!is_singular('product')) {
+        return $content;
+    }
+    
+    // Pattern to match headings with "NGÀY X:" or "ĐÊM X:" - improved to handle various formats
+    // Matches: NGÀY 1:, ĐÊM 1:, NGÀY 1 :, etc.
+    $pattern = '/<(h[2-3])[^>]*>((?:NGÀY|ĐÊM)\s+\d+)\s*:?\s*(.*?)<\/\1>/iu';
+    
+    $content = preg_replace_callback($pattern, function($matches) {
+        $tag = $matches[1];
+        $day_label = trim($matches[2]); // "NGÀY 1" or "ĐÊM 1"
+        $day_content = trim($matches[3]); // Rest of the content after ":"
+        
+        if (empty($day_content)) {
+            // If no content after colon, return original
+            return $matches[0];
+        }
+        
+        return '<' . $tag . ' class="itinerary-day-header"><span class="day-label">' . esc_html($day_label) . '</span><span class="day-content">' . esc_html($day_content) . '</span></' . $tag . '>';
+    }, $content);
+    
+    return $content;
+}
+add_filter('the_content', 'traveltour_format_itinerary_headings', 20);
 
 // Booking form handler
 function traveltour_booking_form_handler() {
@@ -394,6 +752,19 @@ function traveltour_customize_register($wp_customize) {
         'section' => 'traveltour_options',
         'type' => 'url',
     ));
+
+    // Callback banner video (optional)
+    if (class_exists('WP_Customize_Media_Control')) {
+        $wp_customize->add_setting('traveltour_callback_video', array(
+            'default' => '',
+            'sanitize_callback' => 'absint', // stores attachment ID
+        ));
+        $wp_customize->add_control(new WP_Customize_Media_Control($wp_customize, 'traveltour_callback_video', array(
+            'label' => __('Video cho banner tư vấn (tùy chọn)', 'traveltour'),
+            'section' => 'traveltour_options',
+            'mime_type' => 'video',
+        )));
+    }
 }
 add_action('customize_register', 'traveltour_customize_register');
 

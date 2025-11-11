@@ -117,16 +117,37 @@ Tương tự như trên
 3. Thiết lập phần **Dữ liệu sản phẩm** như thường lệ (giá, khuyến mãi...).
 4. Điền các trường tuỳ chỉnh của theme trong phần “Tùy chỉnh Tour” (bên phải/ dưới cùng trang):
    - **Thời gian tour**: ví dụ `3 ngày 3 đêm`
-   - **Điểm khởi hành**: ví dụ `Hồ Chí Minh` hoặc `Hà Nội`
-   - **Điểm đến**: ví dụ `Nha Trang`
-   - (Tuỳ chọn) **Phương tiện** và **Tiêu chuẩn** nếu bạn có sử dụng 2 trường này
+   - **Phương tiện**: ví dụ `Xe Limousine`, `Máy bay`
+   - **Tiêu chuẩn**: ví dụ `4 sao`
+   - (Tuỳ chọn) Các phần mở rộng cho accordion:
+     - **Giá tour chi tiết**: Tìm khung **"Giá tour chi tiết"** (meta box riêng, thường nằm dưới phần mô tả sản phẩm). Điền đầy đủ 4 trường:
+       - **Giá tour cơ bản (Người lớn)**: nhập số không dấu phẩy, ví dụ `3290000`
+       - **Giá tour cơ bản (Trẻ em)**: nhập số không dấu phẩy, ví dụ `2632000`
+       - **Giá tour cơ bản (Em bé)**: nhập số không dấu phẩy, ví dụ `0`
+       - **Phụ thu phòng đơn**: nhập số không dấu phẩy, ví dụ `1000000`
+       - Hệ thống sẽ tự động format thành định dạng VND (ví dụ: `3.290.000 đ`) khi hiển thị.
+     - **Lịch khởi hành**: Tìm khung **"Lịch khởi hành"** (meta box riêng, thường nằm dưới phần mô tả sản phẩm). Nhấn nút **"+ Thêm lịch khởi hành"** để thêm từng lịch. Điền đầy đủ:
+       - **Ngày khởi hành**: ví dụ `13/11/2025`
+       - **Phương tiện**: ví dụ `Xe Limousine 28 chỗ`
+       - **Giá (VND)**: nhập số không dấu phẩy, ví dụ `3290000` (hệ thống sẽ tự format thành `3.290.000 đ`)
+       - Nhấn nút **"Xóa"** để xóa lịch không cần thiết.
+     - **Giá tour bao gồm, Giá tour không bao gồm, Quy định trẻ em, Quy định hủy tour, Ghi chú, Hình thức thanh toán, Điểm đón khách**: điền nội dung để hiển thị ở từng ô xổ xuống.
 5. Thêm **Ảnh đại diện sản phẩm** (ảnh lớn) và **Thư viện ảnh** (gallery) trong khung “Thư viện sản phẩm”. Các ảnh này sẽ hiển thị ở phần album và trong tab **“Hình ảnh”**.
 6. Gán sản phẩm vào **Danh mục sản phẩm (product_cat)** phù hợp (ví dụ: `tour-trong-nuoc > tour-nha-trang`). Việc gán đúng danh mục giúp trang **Tour Landing Page** lấy đúng dữ liệu.
 7. Xuất bản sản phẩm. Mở trang chi tiết để kiểm tra:
    - Cột trái: album ảnh + thumbnail
    - Cột phải: khối giá, thông số (thời gian, phương tiện, tiêu chuẩn), nút đặt/mua
-   - Banner “Yêu cầu tư vấn” với form SĐT
+   - Banner "Yêu cầu tư vấn" với form SĐT
    - Tabs: **Lịch trình tour** (lấy từ mô tả bạn đã viết ở bước 2) và **Hình ảnh** (lấy từ gallery)
+
+**Lưu ý về format lịch trình tour:**
+Khi viết mô tả tour trong WordPress editor, để các heading tự động format thành banner xanh, bạn cần:
+- Sử dụng **Heading 2 (H2)** hoặc **Heading 3 (H3)**
+- Viết theo format: `NGÀY X: Nội dung` hoặc `ĐÊM X: Nội dung`
+- Ví dụ:
+  - `NGÀY 1: KHÁM PHÁ ĐẢO BÌNH HƯNG- BÃI CÂY ME- TIỆC NƯỚNG TÔM HÙM- BUFFET HẢI SẢN`
+  - `ĐÊM 1: TP. HỒ CHÍ MINH – BÌNH HƯNG (Nghỉ đêm trên xe)`
+- Hệ thống sẽ tự động tách thành 2 phần: "NGÀY 1" (bên trái) và nội dung còn lại (bên phải)
 
 ## Bước 6: Cấu hình Trang chủ
 

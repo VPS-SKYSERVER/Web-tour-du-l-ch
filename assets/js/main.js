@@ -66,11 +66,65 @@
         });
         });
         
-        // Product Gallery Thumbnail Click
-        $('.product-gallery-thumbs img').on('click', function() {
-            var src = $(this).attr('src').replace('-150x150', '').replace('-300x300', '');
-            $('.product-gallery img:first').attr('src', src);
-        });
+        // Product slider
+        (function(){
+            var $slider = $('[data-product-slider]');
+            if (!$slider.length) return;
+            var $slides = $slider.find('.product-slide');
+            var $thumbsWrap = $('[data-slider-thumbs]');
+            var $thumbs = $thumbsWrap.find('.product-thumb');
+            var current = 0;
+            var timer = null;
+            var intervalMs = 4000; // auto slide every 4s
+            function goTo(index){
+                if (index < 0) index = $slides.length - 1;
+                if (index >= $slides.length) index = 0;
+                current = index;
+                $slides.removeClass('is-active').eq(current).addClass('is-active');
+                $thumbs.removeClass('is-active').eq(current).addClass('is-active');
+            }
+            function startAuto(){
+                stopAuto();
+                timer = setInterval(function(){ goTo(current + 1); }, intervalMs);
+            }
+            function stopAuto(){
+                if (timer) { clearInterval(timer); timer = null; }
+            }
+            // No arrows (removed from markup)
+            $thumbs.on('click', function(){
+                var idx = parseInt($(this).attr('data-thumb-index'), 10);
+                goTo(idx);
+                startAuto();
+            });
+            // pause on hover, resume on leave
+            $slider.on('mouseenter', stopAuto).on('mouseleave', startAuto);
+            startAuto();
+        })();
+
+        // Tour accordion
+        (function(){
+            var $accordion = $('[data-tour-accordion]');
+            if (!$accordion.length) return;
+            $accordion.on('click', '.tour-accordion__header', function(){
+                var $header = $(this);
+                var $body = $header.next('.tour-accordion__body');
+                var isOpen = $body.hasClass('is-open');
+                if (isOpen) {
+                    $body.removeClass('is-open').stop().slideUp(180);
+                    $header.removeClass('is-open');
+                } else {
+                    $accordion.find('.tour-accordion__body').removeClass('is-open').stop().slideUp(180);
+                    $accordion.find('.tour-accordion__header').removeClass('is-open');
+                    $body.addClass('is-open').stop().slideDown(220);
+                    $header.addClass('is-open');
+                }
+            });
+            // open first section if any
+            var $first = $accordion.find('.tour-accordion__header').first();
+            if ($first.length) {
+                $first.trigger('click');
+            }
+        })();
         
         // Mobile Menu Toggle
         $('.menu-toggle').on('click', function() {
@@ -165,6 +219,47 @@
             }
         });
         
+        // Price Check Calculator
+        function updatePriceSummary() {
+            var adultQty = parseInt($('#price-adult').val()) || 0;
+            var childQty = parseInt($('#price-child').val()) || 0;
+            var infantQty = parseInt($('#price-infant').val()) || 0;
+            
+            var adultPrice = parseFloat($('#price-adult').data('price')) || 0;
+            var childPrice = parseFloat($('#price-child').data('price')) || 0;
+            var infantPrice = parseFloat($('#price-infant').data('price')) || 0;
+            
+            var adultTotal = adultQty * adultPrice;
+            var childTotal = childQty * childPrice;
+            var infantTotal = infantQty * infantPrice;
+            var grandTotal = adultTotal + childTotal + infantTotal;
+            
+            // Update quantities
+            $('.qty-adult').text(adultQty);
+            $('.qty-child').text(childQty);
+            $('.qty-infant').text(infantQty);
+            
+            // Update totals
+            $('.total-adult').text(formatPrice(adultTotal));
+            $('.total-child').text(formatPrice(childTotal));
+            $('.total-infant').text(formatPrice(infantTotal));
+            $('.grand-total').text(formatPrice(grandTotal));
+        }
+        
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN').format(Math.round(price)) + ' ₫';
+        }
+        
+        // Auto-calculate on input change
+        $('#price-adult, #price-child, #price-infant').on('input change', function() {
+            updatePriceSummary();
+        });
+        
+        // Initialize calculation
+        if ($('#price-check-form').length) {
+            updatePriceSummary();
+        }
+        
     });
     
     // Window Load
@@ -184,6 +279,6 @@
             $('.site-header').removeClass('scrolled');
         }
     });
-
+    
 })(jQuery);
 
