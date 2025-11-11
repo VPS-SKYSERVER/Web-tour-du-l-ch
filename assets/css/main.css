@@ -207,7 +207,7 @@
 .summary-actions button,
 .summary-actions .single_add_to_cart_button {
     width: 100%;
-    background: linear-gradient(90deg, #ee9c3a, #e5862a);
+    background: linear-gradient(90deg, #538D46, #3d6b33);
     border: none;
     color: #fff;
     font-weight: 700;
@@ -341,7 +341,7 @@
 }
 .itinerary-content h2.itinerary-day-header,
 .itinerary-content h3.itinerary-day-header {
-    background: #0073aa;
+    background: #538D46;
     color: #fff;
     padding: 0;
     margin: 20px 0 15px 0;
@@ -394,7 +394,8 @@
     width: 100%;
     text-align: left;
     padding: 14px 18px;
-    background: #fff3a0;
+    background: #538D46;
+    color: #fff;
     border: none;
     font-weight: 800;
     font-size: 16px;
@@ -404,7 +405,6 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    color: #171717;
 }
 .tour-accordion__icon {
     font-size: 20px;
@@ -552,7 +552,7 @@
     align-self: end;
 }
 .price-check-btn {
-    background: linear-gradient(90deg, #ee9c3a, #e5862a);
+    background: linear-gradient(90deg, #538D46, #3d6b33);
     color: #fff;
     border: none;
     padding: 12px 24px;
@@ -717,7 +717,7 @@
     font-weight: 700;
 }
 .contact-item:first-child .contact-icon {
-    background: #007bff;
+    background: #538D46;
     color: #fff;
 }
 
@@ -877,7 +877,7 @@
 .callback-button {
     border: none;
     border-radius: 8px;
-    background: linear-gradient(90deg, #ff9f43, #ff7f11);
+    background: linear-gradient(90deg, #538D46, #3d6b33);
     color: #fff;
     font-weight: 700;
     font-size: 16px;
@@ -901,7 +901,7 @@
 .tour-short-desc__box {
     border: 1px solid #cfcfcf;        /* viền xám rõ hơn */
     background: #fffefa;              /* nền sáng hơi vàng như mẫu */
-    border-top: 5px solid #e3b23c;    /* thanh nhấn trên dày hơn */
+    border-top: 5px solid #538D46;    /* thanh nhấn trên dày hơn */
     border-radius: 4px;
     padding: 12px 14px;
     overflow: hidden;                 /* đảm bảo bo góc hiển thị chuẩn */

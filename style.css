@@ -21,10 +21,10 @@ This theme requires WooCommerce plugin to function properly.
 }
 
 :root {
-    --primary-color: #FF5722;
-    --primary-dark: #E64A19;
-    --primary-light: #FF8A65;
-    --secondary-color: #FF9800;
+    --primary-color: #538D46;
+    --primary-dark: #3d6b33;
+    --primary-light: #6ba85c;
+    --secondary-color: #6ba85c;
     --text-dark: #333333;
     --text-light: #666666;
     --bg-light: #F5F5F5;
@@ -228,7 +228,7 @@ img {
 }
 
 .main-navigation .sub-menu a:hover {
-    background: rgba(255, 87, 34, 0.08);
+    background: rgba(83, 141, 70, 0.08);
     color: var(--primary-color);
 }
 
